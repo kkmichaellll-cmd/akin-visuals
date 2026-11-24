@@ -210,24 +210,40 @@ html{scroll-behavior:smooth;scroll-padding-top:24px} body{overflow-x:clip} .proj
  .mono-journal { font-size:15px }
 }
 
-/* Chevron identity and section navigation */
-.orange-header { background:rgba(176,240,220,.82); gap:18px }
-.orange-header .wordmark { flex:none; min-height:44px }
-.orange-header .wordmark img { width:clamp(132px,13vw,188px); height:auto; max-height:none }
-.orange-header nav { gap:clamp(12px,2.4vw,38px) }
-.orange-header nav>a.nav-cta { margin:0 }
-.nav-sections { display:flex; align-items:center; padding:0 6px; border-radius:5px; background:var(--ink) }
-.orange-header .nav-sections a { display:flex; align-items:center; position:relative; padding:0 clamp(10px,1.15vw,19px); min-height:44px; color:#fff; font:500 12px/1.2 Arial,Helvetica,sans-serif; letter-spacing:.025em; text-transform:capitalize }
-.nav-sections a::after { content:""; position:absolute; left:clamp(10px,1.15vw,19px); right:clamp(10px,1.15vw,19px); bottom:9px; height:1px; background:currentColor; transform:scaleX(0); transform-origin:left; transition:transform .2s var(--ease) }
-.nav-sections a:focus-visible::after { transform:scaleX(1) }
-.nav-sections a:focus-visible { outline:2px solid #fff; outline-offset:-4px }
-@media(hover:hover){ .nav-sections a:hover::after { transform:scaleX(1) } }
+/* Floating navigation over the terrain artwork */
+.orange-header { background:transparent; border:0; padding-inline:clamp(12px,2vw,32px) }
+.orange-header .wordmark { min-height:44px; flex:none }
+.orange-header .wordmark img { width:clamp(118px,12vw,176px); height:auto; max-height:none }
+.nav-sections { display:flex; align-items:center; gap:3px }
+.orange-header .nav-sections a {
+ display:inline-flex; align-items:center; justify-content:center;
+ padding:0 clamp(10px,1.35vw,22px); min-height:40px; white-space:nowrap;
+ color:white; background:rgba(8,62,67,.67); border:0; border-radius:999px;
+ font:500 clamp(12px,.93vw,14px)/1.25 Arial,Helvetica,sans-serif;
+ transition:background-color .2s,color .2s;
+}
+.orange-header .nav-sections a[aria-current="location"],
+.orange-header nav>a.nav-cta,.orange-actions a:first-child {
+ background:#fff; color:#083e43; border-color:#fff;
+}
+.orange-header nav>a.nav-cta { margin:0; white-space:nowrap; font-weight:600; }
+@media(hover:hover){
+ .orange-header .nav-sections a:not([aria-current]):hover { background:#083e43 }
+ .orange-header nav>a.nav-cta:hover,.orange-actions a:first-child:hover { background:#e4fff3; color:#083e43 }
+}
+@media(min-width:721px){
+ .orange-header nav { position:static; margin-left:auto }
+ .orange-header .nav-sections { position:absolute; left:50%; transform:translateX(-50%) }
+}
+@media(min-width:721px) and (max-width:860px){
+ .orange-header { inset-inline:2%; padding-inline:10px }
+ .orange-header nav>a.nav-cta { padding-inline:12px; font-size:13px }
+}
 @media(max-width:720px){
  .orange-header .wordmark img { width:144px }
- .orange-header .menu-toggle { color:var(--ink) }
- .orange-header nav { gap:0; padding:clamp(20px,6vw,42px); padding-bottom:max(28px,env(safe-area-inset-bottom)); overflow:auto }
- .nav-sections { display:block; padding:0; border-radius:0; background:transparent }
- .orange-header .nav-sections a { padding:clamp(14px,3.5vh,24px) 0; font-size:clamp(24px,6vw,36px); line-height:1.15; letter-spacing:-.035em; border:0; border-bottom:1px solid #ffffff40 }
- .nav-sections a::after { display:none }
- .orange-header nav>a.nav-cta { margin-top:24px; flex-shrink:0; border-color:#f1fff7 }
+ .orange-header .menu-toggle { color:var(--ink); border-radius:50%; background:rgba(255,255,255,.85); width:44px; padding:0 }
+ .orange-header nav { padding:24px; padding-bottom:max(24px,env(safe-area-inset-bottom)); gap:22px; overflow:auto }
+ .nav-sections { flex-direction:column; align-items:stretch; gap:7px }
+ .orange-header .nav-sections a { padding-inline:22px; min-height:46px; justify-content:flex-start; background:rgba(255,255,255,.14); font-size:17px }
+ .orange-header nav>a.nav-cta { align-self:flex-start; flex:none }
 }

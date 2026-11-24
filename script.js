@@ -51,3 +51,17 @@ const visibleCovers = new Set();
 function syncCoverVideos(){coverVideos.forEach(v=>{v.muted=true;if(visibleCovers.has(v)&&!motionPreference.matches&&!document.hidden&&!dialog.open){if(!v.hasAttribute("src"))v.src=v.dataset.src;v.play().catch(()=>{});}else{v.pause();}});}
 if('IntersectionObserver' in window){const coverObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)visibleCovers.add(e.target);else visibleCovers.delete(e.target);});syncCoverVideos();},{threshold:0.1});coverVideos.forEach(v=>coverObserver.observe(v));}else{coverVideos.forEach(v=>visibleCovers.add(v));syncCoverVideos();}
 motionPreference.addEventListener('change',syncCoverVideos);document.addEventListener('visibilitychange',syncCoverVideos);dialog.addEventListener('close',syncCoverVideos);new MutationObserver(syncCoverVideos).observe(dialog,{attributes:true,attributeFilter:['open']});
+
+// Reflect the current anchor when opening a shared link or using browser history.
+function updateNavigationPills() {
+ const section = window.location.hash || '#top';
+ document.querySelectorAll('.nav-sections a').forEach(link => {
+  if (link.getAttribute('href') === section) {
+   link.setAttribute('aria-current', 'location');
+  } else {
+   link.removeAttribute('aria-current');
+  }
+ });
+}
+window.addEventListener('hashchange', updateNavigationPills);
+updateNavigationPills();
