@@ -3,11 +3,12 @@ const menuButton=document.querySelector('.menu-toggle');
 const navigation=document.querySelector('#navigation');
 function closeMenu(){menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open navigation');navigation.classList.remove('open');document.body.style.overflow='';}
 menuButton.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Close navigation':'Open navigation');navigation.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';});
+document.querySelector('.wordmark').addEventListener('click',closeMenu);
 navigation.addEventListener('click',event=>{if(event.target.closest('a'))closeMenu();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&navigation.classList.contains('open')){closeMenu();menuButton.focus();}});
 matchMedia('(min-width:721px)').addEventListener('change',event=>{if(event.matches)closeMenu();});
-navigation.addEventListener('keydown',event=>{if(event.key==='Tab'&&navigation.classList.contains('open')){const last=navigation.querySelector('a:last-child');if(event.target===last&&!event.shiftKey){event.preventDefault();menuButton.focus();}}});
-menuButton.addEventListener('keydown',event=>{if(event.key==='Tab'&&event.shiftKey&&navigation.classList.contains('open')){event.preventDefault();navigation.querySelector('a:last-child').focus();}});
+navigation.addEventListener('keydown',event=>{if(event.key==='Tab'&&navigation.classList.contains('open')){const last=navigation.querySelector('.nav-cta');if(event.target===last&&!event.shiftKey){event.preventDefault();menuButton.focus();}}});
+menuButton.addEventListener('keydown',event=>{if(event.key==='Tab'&&event.shiftKey&&navigation.classList.contains('open')){event.preventDefault();navigation.querySelector('.nav-cta').focus();}});
 document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{const category=button.dataset.filter;let count=0;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.querySelectorAll('.project').forEach(project=>{project.hidden=category!=='All Work'&&project.dataset.category!==category;if(!project.hidden)count++;project.classList.add('visible');});document.querySelector('.project-grid').classList.toggle('filtered',category!=='All Work');document.querySelector('#filter-status').textContent=`Showing ${count} projects${category==='All Work'?'':` in ${category}`}.`;}));
 const dialog=document.querySelector('#project-dialog');
 let opener;
