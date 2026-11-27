@@ -9,22 +9,80 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&navigation.
 matchMedia('(min-width:721px)').addEventListener('change',event=>{if(event.matches)closeMenu();});
 navigation.addEventListener('keydown',event=>{if(event.key==='Tab'&&navigation.classList.contains('open')){const last=navigation.querySelector('.nav-cta');if(event.target===last&&!event.shiftKey){event.preventDefault();menuButton.focus();}}});
 menuButton.addEventListener('keydown',event=>{if(event.key==='Tab'&&event.shiftKey&&navigation.classList.contains('open')){event.preventDefault();navigation.querySelector('.nav-cta').focus();}});
-document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{const category=button.dataset.filter;let count=0;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.querySelectorAll('.project').forEach(project=>{project.hidden=category!=='All Work'&&project.dataset.category!==category;if(!project.hidden)count++;project.classList.add('visible');});document.querySelector('.project-grid').classList.toggle('filtered',category!=='All Work');document.querySelector('#filter-status').textContent=`Showing ${count} projects${category==='All Work'?'':` in ${category}`}.`;}));
+const cards = [...document.querySelectorAll('.project')];
+const filters = [...document.querySelectorAll('[data-filter]')];
+function matchesDomain(card, domain) {
+  return domain === 'All Work' || card.dataset.domains.split('|').includes(domain);
+}
+function selectDomain(domain) {
+  const visible = cards.filter(card => matchesDomain(card, domain));
+  cards.forEach(card => {
+    card.hidden = !visible.includes(card);
+    card.classList.toggle('wide', visible.length % 2 === 1 && card === visible.at(-1));
+  });
+  filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === domain)));
+  document.querySelector('#filter-status').textContent = 'Showing ' + visible.length + ' projects in ' + domain + '.';
+}
+filters.forEach(button => {
+  const domain = button.dataset.filter;
+  button.textContent = domain + ' (' + cards.filter(card => matchesDomain(card, domain)).length + ')';
+  button.addEventListener('click', () => selectDomain(domain));
+});
+selectDomain('All Work');
 const dialog=document.querySelector('#project-dialog');
 let opener;
-const projects=[{"title": "Earthquake & Tectonic Distribution Maps", "category": "Geo-Vis & Maps", "description": "Scientific maps visualizing earthquake occurrence, tectonic structures and seismological station distribution. Carefully layered cartography makes spatial relationships across geological datasets easier to interpret.", "image": "earthquake-tectonic-map.jpg", "secondary": ["tectonic-map.jpg"], "label": "GEOSPATIAL CARTOGRAPHY"}, {"title": "Fulani Mobility & Trajectory Map", "category": "Geo-Vis & Maps", "description": "A mobility map tracing trajectories and destinations while illustrating the factors that shape movement patterns. The cartographic design supports a clearer reading of spatial routes and their relationships.", "image": "fulani-mobility-map.jpg", "label": "MOBILITY MAPPING"}, {"title": "Subsurface Velocity Model — Cross-Sections", "category": "Data Visualization", "description": "A scientific data visualization of subsurface seismic velocity models, using cross-sectional views to communicate changes in the structure and properties of material beneath the surface.", "image": "subsurface-velocity-sections.jpg", "label": "GEOPHYSICAL DATA VISUALIZATION"}, {"title": "Seismometer Deployment Illustrations", "category": "Scientific Illustration", "description": "Technical illustrations documenting seismometer sensor deployment and field configuration. The diagrams clarify instrument positioning and installation through structured scientific visual communication.", "image": "seismometer-deployment-figure5.jpg", "secondary": ["seismometer-deployment-figure6.jpg"], "label": "TECHNICAL ILLUSTRATION"}, {"title": "Drift, Actor-Networks, and Structuration", "category": "Thesis Covers", "description": "A thesis cover exploring planning-support systems institutionalization in Rwanda. Concentric patterns meet interconnected networks, referencing the relationship between spatial planning processes, actors and institutions. Designed for Deborah Adeola Oyeku, University of Twente — ITC.", "image": "Institutionalization.jpg", "label": "THESIS COVER DESIGN"}, {"title": "Deep, Deeper, Deepest-NL", "category": "Thesis Covers", "description": "A research thesis cover depicting the crust and upper mantle of the Netherlands. Geological maps, seismic profiles and an illustrated subsurface scene bring the scientific subject into a cohesive visual narrative. Designed for Stephen Akínwùmí Akínrẹmí, University of Twente — ITC.", "image": "Deep_Deeper_Deepest_NL.jpg", "label": "THESIS COVER DESIGN"}, {"title": "Tectonic Earthquakes — Animated", "category": "Illustration & Animation", "description": "A scientific motion visualization showing the spatial relationship between tectonic activity and earthquake occurrence. Animated mapping helps communicate geologic activity over time.", "image": "tectonic-map.jpg", "video": "tectonic-earthquake.mp4", "label": "SCIENTIFIC ANIMATION"}, {"title": "Seismic Wave Speed — Fast & Slow", "category": "Illustration & Animation", "description": "An explanatory visualization showing how seismic waves propagate through high- and low-velocity Earth materials toward seismic receivers. The illustration supports an understanding of wave travel and varying subsurface conditions.", "image": "seismic-wave-velocities.jpg", "video": "seismic-waves.mp4", "label": "GEOPHYSICAL MOTION CONCEPT"}, {"title": "Fault Movement & Earthquake Formation", "category": "Illustration & Animation", "description": "A geological visualization exploring fault movement, the generation of earthquakes and the resulting changes at the surface. Composed to explain connections between subsurface processes and visible land deformation.", "image": "fault-movement-graphic.png", "video": "fault-movement.mp4", "label": "GEOLOGICAL ANIMATION CONCEPT"}];
+const projects = [
+  {
+    "image": "earthquake-tectonic-map.jpg",
+    "secondary": [
+      "tectonic-map.jpg"
+    ]
+  },
+  {
+    "image": "fulani-mobility-map.jpg"
+  },
+  {
+    "image": "subsurface-velocity-sections.jpg"
+  },
+  {
+    "image": "seismometer-deployment-figure5.jpg",
+    "secondary": [
+      "seismometer-deployment-figure6.jpg"
+    ]
+  },
+  {
+    "image": "Institutionalization.jpg"
+  },
+  {
+    "image": "Deep_Deeper_Deepest_NL.jpg"
+  },
+  {
+    "image": "tectonic-map.jpg",
+    "video": "tectonic-earthquake.mp4"
+  },
+  {
+    "image": "seismic-wave-velocities.jpg",
+    "video": "seismic-waves.mp4"
+  },
+  {
+    "image": "fault-movement-graphic.png",
+    "video": "fault-movement.mp4"
+  }
+];
 document.querySelectorAll('[data-project]').forEach(button=>button.addEventListener('click',()=>{
  const p=projects[Number(button.dataset.project)];
  if(!p)return;
  opener=button;
- document.querySelector('#dialog-title').textContent=p.title;
- document.querySelector('#dialog-category').textContent=p.category.toUpperCase();
- document.querySelector('#dialog-description').textContent=p.description;
+ const card = button.closest('.project');
+ const title = card.querySelector('h3').textContent;
+ document.querySelector('#dialog-title').textContent=title;
+ document.querySelector('#dialog-category').textContent=card.querySelector('.project-meta').innerText.replace(/\n+/g, ' · ');
+ document.querySelector('#dialog-description').textContent=card.querySelector('p').textContent;
  const img=document.querySelector('#dialog-image');
  img.src='assets/'+p.image;
- img.alt=p.title+' — full original artwork';
+ img.alt=(["Maps of earthquake epicentres, tectonic structures and seismic stations", "Map of Fulani movement routes and destinations", "Colour-coded cross-sections of subsurface seismic velocities", "Diagram of seismometer deployment and sensor positioning", "Thesis jacket with concentric rings and a network of connected nodes", "Thesis jacket showing geological maps and a cutaway of the Dutch subsurface", "Tectonic map showing earthquake locations", "Diagram comparing seismic wave travel through fast and slow materials", "Diagram of fault displacement and deformation of the ground surface"])[Number(button.dataset.project)];
  const gallery=document.querySelector('#dialog-gallery');gallery.replaceChildren();
- (p.secondary||[]).forEach(name=>{const pic=document.createElement('img');pic.src='assets/'+name;pic.alt='Additional original artwork for '+p.title;pic.loading='lazy';gallery.appendChild(pic);});
+ (p.secondary||[]).forEach(name=>{const pic=document.createElement('img');pic.src='assets/'+name;pic.alt=name === 'tectonic-map.jpg' ? 'Map of tectonic structures and earthquake activity' : 'Additional field configuration diagram for seismometer deployment';pic.loading='lazy';gallery.appendChild(pic);});
  const video=document.querySelector('#dialog-video');video.pause();video.removeAttribute('src');video.load();
  if(p.video){video.src='assets/'+p.video;video.hidden=false;}else{video.hidden=true;}
  dialog.showModal();dialog.scrollTop=0;document.body.style.overflow='hidden';
@@ -35,10 +93,49 @@ dialog.addEventListener('click',event=>{if(event.target!==dialog)return;
  const bounds=dialog.getBoundingClientRect();
  if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)closeProject();});
 dialog.addEventListener('close',()=>{const video=document.querySelector('#dialog-video');video.pause();document.body.style.overflow='';if(document.activeElement===document.body)opener?.focus({preventScroll:true});});
-document.querySelector('#dialog-contact').addEventListener('click',()=>{closeProject();document.querySelector('#contact input').focus({preventScroll:true});});
+document.querySelector('#dialog-contact').addEventListener('click', event => {
+  event.preventDefault();
+  closeProject();
+  location.hash = 'contact';
+  document.querySelector('#contact').scrollIntoView();
+  document.querySelector('#contact input').focus({preventScroll: true});
+});
 const form=document.querySelector('#contact-form');
-form.addEventListener('submit',event=>{event.preventDefault();if(!form.reportValidity())return;const data=new FormData(form);const enquiry=`Project enquiry — Akin Visuals\n\nName: ${data.get('name').trim()}\nEmail: ${data.get('email').trim()}\nProject type: ${data.get('type')}\n\n${data.get('message').trim()}`;document.querySelector('#enquiry-preview').value=enquiry;document.querySelector('#form-result').hidden=false;document.querySelector('#form-status').textContent='Your enquiry is ready to copy. No message has been sent.';document.querySelector('#enquiry-preview').focus();});
-document.querySelector('#copy-enquiry').addEventListener('click',async()=>{const preview=document.querySelector('#enquiry-preview');try{await navigator.clipboard.writeText(preview.value);document.querySelector('#form-status').textContent='Enquiry copied. No message has been sent.';}catch{preview.focus();preview.select();document.querySelector('#form-status').textContent='Select and copy the enquiry below using your device’s copy command.';}});
+const statusText = document.querySelector('#form-status');
+const send = form.querySelector('.send-button');
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (send.disabled) return;
+  const data = Object.fromEntries(new FormData(form));
+  for (const name of ['name', 'message']) {
+    const input = form.elements[name];
+    input.setCustomValidity(input.value.trim().length < (name === 'message' ? 10 : 1) ? 'Please enter ' + (name === 'message' ? 'at least 10 characters.' : 'your name.') : '');
+  }
+  if (!form.reportValidity()) return;
+  send.disabled = true;
+  send.firstChild.textContent = 'Sending… ';
+  form.setAttribute('aria-busy', 'true');
+  statusText.textContent = 'Sending your message…';
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (response.ok && result.sent === true) {
+      form.reset();
+      statusText.textContent = 'Thanks — your message is on its way. We’ll reply within 2 business days.';
+    } else {
+      statusText.textContent = result.error || 'Your message didn’t send. Please try again.';
+    }
+  } catch {
+    statusText.textContent = 'Your message didn’t send. Please try again.';
+  } finally {
+    send.disabled = false;
+    send.firstChild.textContent = 'Send Message ';
+    form.removeAttribute('aria-busy');
+  }
+});
+form.addEventListener('input', event => event.target.setCustomValidity?.(''));
 if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion:reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}}),{threshold:.06});document.querySelectorAll('.section-intro,.project,.tool-row,.quotes figure').forEach(el=>{el.classList.add('reveal');observer.observe(el);});}
 
 // Service panels lead to the corresponding portfolio category.
